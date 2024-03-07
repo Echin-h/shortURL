@@ -1,6 +1,7 @@
 package configs
 
 import (
+	"ShortUrl/internal/global/log"
 	"ShortUrl/tools"
 	"fmt"
 	"github.com/kelseyhightower/envconfig"
@@ -15,6 +16,7 @@ func Init() {
 	viper.AddConfigPath(".")
 
 	if tools.FileExist(Path) {
+		log.SugarLogger.Info("Config Info is ok -- in log ")
 		tools.PanicIfErr(
 			viper.ReadInConfig(),
 			viper.Unmarshal(&c),

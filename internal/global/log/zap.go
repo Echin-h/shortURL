@@ -1,10 +1,10 @@
 package log
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"gopkg.in/natefinch/lumberjack.v2"
+	"os"
 )
 
 var (
@@ -12,20 +12,24 @@ var (
 )
 
 // 做一个闭包
-func Init() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		initLogger()
-		c.Next()
-	}
+func Init() {
+	//return func(c *gin.Context) {
+	//	initLogger()
+	//	c.Next()
+	//}
+	initLogger()
 }
 
 func initLogger() {
 	Encoder := getEncoder()
-	WriterSyncer := getWriterSyncer()
+	// 输出地方为控制台怎么写
+	WriterSyncer := zapcore.Lock(os.Stdout)
+	fmt.Println("log os.Stdout success")
 	core := zapcore.NewCore(Encoder, WriterSyncer, zapcore.DebugLevel)
 	//  zap.AddCaller()可以实现记录函数信息
 	logger := zap.New(core, zap.AddCaller())
 	SugarLogger = logger.Sugar()
+	fmt.Println("log init success")
 }
 
 // 编码器
@@ -37,12 +41,12 @@ func getEncoder() zapcore.Encoder {
 }
 
 // 写入位置
-func getWriterSyncer() zapcore.WriteSyncer {
-	return zapcore.AddSync(&lumberjack.Logger{
-		Filename:   "logs/log.log",
-		MaxSize:    1 << 30,
-		MaxBackups: 3,
-		MaxAge:     7,
-		Compress:   true,
-	})
-}
+//func getWriterSyncer() zapcore.WriteSyncer {
+//	return zapcore.AddSync(&lumberjack.Logger{
+//		Filename:   "logs/log.log",
+//		MaxSize:    1 << 30,
+//		MaxBackups: 3,
+//		MaxAge:     7,
+//		Compress:   true,
+//	})
+//}
