@@ -36,3 +36,7 @@ func Init() {
 	}
 	Url = &URL{db}
 }
+
+func GetDatabase() string {
+	return "Url"
+}

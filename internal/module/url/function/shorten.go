@@ -16,22 +16,24 @@ func Shorten(c *gin.Context) {
 	if longUrl == "" {
 		errors.Fail(c, errors.REQUEST_ERROR.WithMessage("longUrl can't be empty"))
 	}
+	u := &model.ShortUrl{}
+	var count int64 = 0 // 用于判断是否存在
+	// long是保留关键字，需要加引号
+	database.Url.Model(&model.ShortUrl{}).Where("`long` = ?", longUrl).First(&u).Count(&count)
+	if count > 0 {
+		log.SugarLogger.Info("short url is already exist")
+		errors.Success(c, "short ult is already exist:", u.Short)
+		return
+	}
 	num := murmur3.Sum64([]byte("longUrl"))
 	ShortUrl := tools.Convert(num)
-	var u = &model.ShortUrl{
+	u = &model.ShortUrl{
 		Count:  0,
 		Long:   longUrl,
 		Short:  ShortUrl,
 		Salt:   "",
 		Expire: time.Now().Add(time.Hour * 24 * 30),
 	}
-	//var cnt int64 = 0
-	var count int64 = 0 // 用于判断是否存在
-	//database.Url.Model(&model.ShortUrl{}).Where("long = ?", u.Long).Count(&cnt)
-	//if cnt > 0 {
-	//	log.SugarLogger.Info("longUrl already exists")
-	//	errors.Fail(c, errors.REQUEST_ERROR.WithMessage("longUrl already exists"))
-	//}
 	database.Url.Model(&model.ShortUrl{}).Where("short = ?", u.Short).Count(&count)
 	var salt string
 	for cnt := 0; count > 0 && cnt <= 3; cnt++ {
@@ -57,5 +59,5 @@ func Shorten(c *gin.Context) {
 		errors.Fail(c, errors.DB_ERROR.WithOrigin(err))
 	}
 	log.SugarLogger.Info("shorten success")
-	errors.Success(c, "shorten success")
+	errors.Success(c, "shorten:", u.Short)
 }
