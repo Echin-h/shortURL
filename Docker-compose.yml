@@ -1,0 +1,29 @@
+version: '3.1'
+
+services:
+  app:
+    build: .
+    container_name: short-url-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 5s  # 两次健康检查的间隔时间
+      timeout: 10s  # 设定命令执行的最长时间
+      retries: 3    # 允许命令失败的最长时间
+
+  mysql:
+    image: mysql:latest
+    container_name: short-url-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: ShortUrl
+      MYSQL_PASSWORD: password
+      MYSQL_USER: user
+    ports:
+      - "3307:3306"
+    restart: always
+
