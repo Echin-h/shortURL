@@ -8,4 +8,5 @@ import (
 func (u *ModuleURL) InitRouter(r *gin.RouterGroup) {
 	r.POST("/shorten", function.Shorten)
 	r.GET("/:short", function.Longer)
+	r.GET("", function.Ping)
 }

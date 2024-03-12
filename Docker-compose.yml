@@ -20,7 +20,7 @@ services:
     container_name: short-url-mysql
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: ShortUrl
+      MYSQL_DATABASE: shortURL
       MYSQL_PASSWORD: password
       MYSQL_USER: user
     ports:
